@@ -2,8 +2,10 @@ import {
   forwardRef,
   useEffect,
   useImperativeHandle,
+  useMemo,
   useRef,
   useState,
+  type SVGProps,
 } from 'react';
 
 type Props = {
@@ -16,66 +18,16 @@ type Song = {
   src: string;
 };
 
-
-function MusicNoteIcon() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      width="20"
-      height="20"
-      aria-hidden="true"
-      focusable="false"
-    >
-      <path
-        d="M10 17.5V6.8L18 5v9.7"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <circle cx="7.5" cy="17.5" r="2.5" fill="currentColor" />
-      <circle cx="15.5" cy="14.7" r="2.5" fill="currentColor" />
-    </svg>
-  );
-}
-
-function formatTime(value: number) {
-  if (!Number.isFinite(value) || value < 0) {
-    return '0:00';
-  }
-
-  const minutes = Math.floor(value / 60);
-  const seconds = Math.floor(value % 60);
-
-  return `${minutes}:${String(seconds).padStart(2, '0')}`;
-}
+type RepeatMode = 'off' | 'all' | 'one';
 
 export type MusicControlHandle = {
-  /**
-   * Gọi trực tiếp từ nút "Chạm để bắt đầu".
-   * Bài đầu tiên luôn phát từ giây 0.
-   */
   playFromStart: () => Promise<void>;
-
-  /**
-   * Tạm dừng nhưng giữ nguyên vị trí đang nghe.
-   */
   pause: () => void;
-
-  /**
-   * Dừng và đưa playlist về bài đầu tiên.
-   */
   stop: () => void;
 };
 
 /**
  * Đặt file MP3 trong public/music rồi khai báo tại đây.
- *
- * Ví dụ:
- * public/music/song-01.mp3
- * public/music/song-02.mp3
- * public/music/song-03.mp3
  */
 const songs: Song[] = [
   {
@@ -95,6 +47,138 @@ const songs: Song[] = [
   },
 ];
 
+function formatTime(value: number) {
+  if (!Number.isFinite(value) || value < 0) {
+    return '0:00';
+  }
+
+  const minutes = Math.floor(value / 60);
+  const seconds = Math.floor(value % 60);
+
+  return `${minutes}:${String(seconds).padStart(2, '0')}`;
+}
+
+function Icon({
+  name,
+  ...props
+}: SVGProps<SVGSVGElement> & {
+  name:
+    | 'music'
+    | 'play'
+    | 'pause'
+    | 'previous'
+    | 'next'
+    | 'shuffle'
+    | 'repeat'
+    | 'repeat-one'
+    | 'volume'
+    | 'chevron'
+    | 'close';
+}) {
+  const common = {
+    viewBox: '0 0 24 24',
+    fill: 'none',
+    stroke: 'currentColor',
+    strokeWidth: 1.9,
+    strokeLinecap: 'round' as const,
+    strokeLinejoin: 'round' as const,
+    'aria-hidden': true,
+    focusable: false,
+    ...props,
+  };
+
+  if (name === 'play') {
+    return (
+      <svg {...common}>
+        <path d="M8.5 6.4v11.2L18 12 8.5 6.4Z" fill="currentColor" stroke="none" />
+      </svg>
+    );
+  }
+
+  if (name === 'pause') {
+    return (
+      <svg {...common}>
+        <path d="M9 7v10M15 7v10" strokeWidth="2.6" />
+      </svg>
+    );
+  }
+
+  if (name === 'previous') {
+    return (
+      <svg {...common}>
+        <path d="M7.5 6.5v11M17 7.5 9.5 12l7.5 4.5v-9Z" fill="currentColor" stroke="none" />
+      </svg>
+    );
+  }
+
+  if (name === 'next') {
+    return (
+      <svg {...common}>
+        <path d="M16.5 6.5v11M7 7.5l7.5 4.5L7 16.5v-9Z" fill="currentColor" stroke="none" />
+      </svg>
+    );
+  }
+
+  if (name === 'shuffle') {
+    return (
+      <svg {...common}>
+        <path d="M4 7h2.4c4.8 0 5.1 10 9.8 10H20" />
+        <path d="m17 14 3 3-3 3" />
+        <path d="M4 17h2.4c1.7 0 2.9-1.4 4-3" />
+        <path d="M13.7 8.2c.7-.7 1.5-1.2 2.5-1.2H20" />
+        <path d="m17 4 3 3-3 3" />
+      </svg>
+    );
+  }
+
+  if (name === 'repeat' || name === 'repeat-one') {
+    return (
+      <svg {...common}>
+        <path d="M17 2.8 20.2 6 17 9.2" />
+        <path d="M4 10V8a2 2 0 0 1 2-2h14" />
+        <path d="m7 21.2-3.2-3.2L7 14.8" />
+        <path d="M20 14v2a2 2 0 0 1-2 2H4" />
+        {name === 'repeat-one' && (
+          <path d="M12 9.6v4.8M10.8 10.8 12 9.6" />
+        )}
+      </svg>
+    );
+  }
+
+  if (name === 'volume') {
+    return (
+      <svg {...common}>
+        <path d="M5 10v4h3l4 3V7L8 10H5Z" />
+        <path d="M15 9.2a4 4 0 0 1 0 5.6M17.5 7a7 7 0 0 1 0 10" />
+      </svg>
+    );
+  }
+
+  if (name === 'chevron') {
+    return (
+      <svg {...common}>
+        <path d="m8 10 4 4 4-4" />
+      </svg>
+    );
+  }
+
+  if (name === 'close') {
+    return (
+      <svg {...common}>
+        <path d="m8 8 8 8M16 8l-8 8" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg {...common}>
+      <path d="M9 18V6.8L19 4.5v10.8" />
+      <circle cx="6.7" cy="18.1" r="2.7" fill="currentColor" stroke="none" />
+      <circle cx="16.7" cy="15.2" r="2.7" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
 const MusicControl = forwardRef<MusicControlHandle, Props>(
   function MusicControl({ enabled }, ref) {
     const audioRef = useRef<HTMLAudioElement>(null);
@@ -105,13 +189,22 @@ const MusicControl = forwardRef<MusicControlHandle, Props>(
     const [playing, setPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
+    const [volume, setVolume] = useState(0.72);
+    const [shuffle, setShuffle] = useState(false);
+    const [repeatMode, setRepeatMode] =
+      useState<RepeatMode>('all');
 
     const currentSong = songs[currentIndex];
 
-    /**
-     * Đổi bài trực tiếp trên cùng một thẻ audio.
-     * Nhờ vậy đóng panel không làm nhạc dừng hoặc reset.
-     */
+    const progressPercent = useMemo(() => {
+      if (!duration) return 0;
+
+      return Math.min(
+        100,
+        Math.max(0, (currentTime / duration) * 100)
+      );
+    }, [currentTime, duration]);
+
     const playSong = async (
       index: number,
       restart = true
@@ -138,6 +231,8 @@ const MusicControl = forwardRef<MusicControlHandle, Props>(
         setCurrentTime(0);
       }
 
+      audio.volume = volume;
+
       try {
         await audio.play();
         setPlaying(true);
@@ -148,6 +243,7 @@ const MusicControl = forwardRef<MusicControlHandle, Props>(
 
     const pause = () => {
       const audio = audioRef.current;
+
       if (!audio) return;
 
       audio.pause();
@@ -156,15 +252,14 @@ const MusicControl = forwardRef<MusicControlHandle, Props>(
 
     const stop = () => {
       const audio = audioRef.current;
+
       if (!audio) return;
 
       audio.pause();
       audio.currentTime = 0;
 
-      const firstSong = songs[0];
-
-      if (firstSong) {
-        audio.src = firstSong.src;
+      if (songs[0]) {
+        audio.src = songs[0].src;
         audio.load();
       }
 
@@ -184,12 +279,20 @@ const MusicControl = forwardRef<MusicControlHandle, Props>(
         pause,
         stop,
       }),
-      []
+      [volume]
     );
 
+    useEffect(() => {
+      const audio = audioRef.current;
+
+      if (!audio) return;
+
+      audio.volume = volume;
+    }, [volume]);
+
     /**
-     * Click ra ngoài chỉ đóng panel.
-     * Audio vẫn tồn tại nên nhạc tiếp tục chạy nền.
+     * Click ra ngoài chỉ thu gọn player.
+     * Audio vẫn tiếp tục chạy nền.
      */
     useEffect(() => {
       if (!open) return;
@@ -235,7 +338,28 @@ const MusicControl = forwardRef<MusicControlHandle, Props>(
         );
     }, [open]);
 
+    const getRandomIndex = () => {
+      if (songs.length <= 1) {
+        return currentIndex;
+      }
+
+      let next = currentIndex;
+
+      while (next === currentIndex) {
+        next = Math.floor(
+          Math.random() * songs.length
+        );
+      }
+
+      return next;
+    };
+
     const playPrevious = async () => {
+      if (shuffle) {
+        await playSong(getRandomIndex(), true);
+        return;
+      }
+
       const previous =
         (currentIndex - 1 + songs.length) %
         songs.length;
@@ -244,10 +368,37 @@ const MusicControl = forwardRef<MusicControlHandle, Props>(
     };
 
     const playNext = async () => {
+      if (shuffle) {
+        await playSong(getRandomIndex(), true);
+        return;
+      }
+
       const next =
         (currentIndex + 1) % songs.length;
 
       await playSong(next, true);
+    };
+
+    const handleEnded = async () => {
+      if (repeatMode === 'one') {
+        await playSong(currentIndex, true);
+        return;
+      }
+
+      const isLast =
+        currentIndex === songs.length - 1;
+
+      if (
+        repeatMode === 'off' &&
+        isLast &&
+        !shuffle
+      ) {
+        setPlaying(false);
+        setCurrentTime(duration);
+        return;
+      }
+
+      await playNext();
     };
 
     const togglePlayback = async () => {
@@ -256,9 +407,6 @@ const MusicControl = forwardRef<MusicControlHandle, Props>(
       if (!audio) return;
 
       if (audio.paused) {
-        /**
-         * Nếu chưa có src thì phát bài hiện tại từ đầu.
-         */
         if (!audio.src) {
           await playSong(currentIndex, true);
           return;
@@ -276,10 +424,14 @@ const MusicControl = forwardRef<MusicControlHandle, Props>(
 
       pause();
     };
+
     const seekTo = (value: number) => {
       const audio = audioRef.current;
 
-      if (!audio || !Number.isFinite(audio.duration)) {
+      if (
+        !audio ||
+        !Number.isFinite(audio.duration)
+      ) {
         return;
       }
 
@@ -292,17 +444,20 @@ const MusicControl = forwardRef<MusicControlHandle, Props>(
       setCurrentTime(nextTime);
     };
 
+    const cycleRepeatMode = () => {
+      setRepeatMode((current) => {
+        if (current === 'off') return 'all';
+        if (current === 'all') return 'one';
+
+        return 'off';
+      });
+    };
 
     return (
       <div
         ref={rootRef}
         className="music-root"
       >
-        {/*
-          Thẻ audio luôn được mount kể cả khi chưa vào website.
-          Vì vậy nút "Chạm để bắt đầu" có thể gọi play()
-          trực tiếp trong user gesture và tránh autoplay block.
-        */}
         <audio
           ref={audioRef}
           preload="metadata"
@@ -333,49 +488,85 @@ const MusicControl = forwardRef<MusicControlHandle, Props>(
                 : 0
             );
           }}
-          onEnded={playNext}
+          onEnded={handleEnded}
         />
 
         {enabled && (
           <>
-            <button
-              type="button"
-              className={`music-control ${
-                open ? 'is-open' : ''
-              }`}
-              onClick={() =>
-                setOpen((current) => !current)
-              }
-              aria-expanded={open}
-              aria-controls="music-panel"
-            >
-              <span
-                className="music-control-icon"
-                aria-hidden="true"
+            <div className="music-mini-player">
+              <button
+                type="button"
+                className="music-mini-main"
+                onClick={() =>
+                  setOpen((current) => !current)
+                }
+                aria-expanded={open}
+                aria-controls="music-panel"
               >
-                <MusicNoteIcon />
-              </span>
+                <span
+                  className={`music-mini-cover ${
+                    playing ? 'is-playing' : ''
+                  }`}
+                  aria-hidden="true"
+                >
+                  <Icon name="music" />
+                </span>
 
-              <span className="music-control-label">
-                {playing
-                  ? 'Playing'
-                  : 'Our songs'}
-              </span>
-            </button>
+                <span className="music-mini-copy">
+                  <strong>
+                    {currentSong?.title}
+                  </strong>
+
+                  <small>
+                    {playing
+                      ? 'Đang phát'
+                      : 'Đã tạm dừng'}
+                  </small>
+                </span>
+
+                <span
+                  className={`music-mini-chevron ${
+                    open ? 'is-open' : ''
+                  }`}
+                  aria-hidden="true"
+                >
+                  <Icon name="chevron" />
+                </span>
+              </button>
+
+              <button
+                type="button"
+                className="music-mini-play"
+                onClick={togglePlayback}
+                aria-label={
+                  playing
+                    ? 'Tạm dừng nhạc'
+                    : 'Phát nhạc'
+                }
+              >
+                <Icon
+                  name={
+                    playing
+                      ? 'pause'
+                      : 'play'
+                  }
+                />
+              </button>
+            </div>
 
             <aside
               id="music-panel"
-              className={`music-panel ${
+              className={`music-panel spotify-like ${
                 open
                   ? 'is-visible'
                   : 'is-hidden'
               }`}
               aria-hidden={!open}
             >
-              <div className="music-panel-header">
+              <div className="music-panel-topbar">
                 <div>
                   <span className="music-kicker">
-                    ♡ OUR LITTLE PLAYLIST
+                    OUR LITTLE PLAYLIST
                   </span>
 
                   <h3>
@@ -387,23 +578,27 @@ const MusicControl = forwardRef<MusicControlHandle, Props>(
                   type="button"
                   className="music-close"
                   onClick={() => setOpen(false)}
-                  aria-label="Đóng danh sách nhạc"
+                  aria-label="Thu gọn trình phát nhạc"
                 >
-                  ×
+                  <Icon name="close" />
                 </button>
               </div>
 
-              <div className="music-now-playing">
-                <span
-                  className={`music-disc ${
+              <div className="music-hero">
+                <div
+                  className={`music-cover-large ${
                     playing ? 'is-playing' : ''
                   }`}
                   aria-hidden="true"
                 >
-                  <MusicNoteIcon />
-                </span>
+                  <div className="music-cover-ring">
+                    <Icon name="music" />
+                  </div>
+                </div>
 
-                <div>
+                <div className="music-track-copy">
+                  <span>NOW PLAYING</span>
+
                   <strong>
                     {currentSong?.title}
                   </strong>
@@ -417,12 +612,10 @@ const MusicControl = forwardRef<MusicControlHandle, Props>(
                   min="0"
                   max={duration || 0}
                   step="0.1"
-                  value={
-                    Math.min(
-                      currentTime,
-                      duration || 0
-                    )
-                  }
+                  value={Math.min(
+                    currentTime,
+                    duration || 0
+                  )}
                   onChange={(event) =>
                     seekTo(
                       Number(event.target.value)
@@ -430,6 +623,15 @@ const MusicControl = forwardRef<MusicControlHandle, Props>(
                   }
                   disabled={!duration}
                   aria-label="Tua nhạc"
+                  style={{
+                    background: `linear-gradient(
+                      90deg,
+                      #e77491 0%,
+                      #e77491 ${progressPercent}%,
+                      #ecdfe2 ${progressPercent}%,
+                      #ecdfe2 100%
+                    )`,
+                  }}
                 />
 
                 <div className="music-progress-time">
@@ -443,18 +645,37 @@ const MusicControl = forwardRef<MusicControlHandle, Props>(
                 </div>
               </div>
 
-              <div className="music-actions">
+              <div className="music-main-controls">
                 <button
                   type="button"
-                  onClick={playPrevious}
-                  aria-label="Bài trước"
+                  className={`music-icon-button ${
+                    shuffle ? 'is-active' : ''
+                  }`}
+                  onClick={() =>
+                    setShuffle((current) => !current)
+                  }
+                  aria-label={
+                    shuffle
+                      ? 'Tắt phát ngẫu nhiên'
+                      : 'Bật phát ngẫu nhiên'
+                  }
+                  aria-pressed={shuffle}
                 >
-                  ‹
+                  <Icon name="shuffle" />
                 </button>
 
                 <button
                   type="button"
-                  className="music-play-button"
+                  className="music-skip-button"
+                  onClick={playPrevious}
+                  aria-label="Bài trước"
+                >
+                  <Icon name="previous" />
+                </button>
+
+                <button
+                  type="button"
+                  className="music-primary-play"
                   onClick={togglePlayback}
                   aria-label={
                     playing
@@ -462,19 +683,80 @@ const MusicControl = forwardRef<MusicControlHandle, Props>(
                       : 'Phát nhạc'
                   }
                 >
-                  {playing ? '❚❚' : '▶'}
+                  <Icon
+                    name={
+                      playing
+                        ? 'pause'
+                        : 'play'
+                    }
+                  />
                 </button>
 
                 <button
                   type="button"
+                  className="music-skip-button"
                   onClick={playNext}
                   aria-label="Bài tiếp theo"
                 >
-                  ›
+                  <Icon name="next" />
+                </button>
+
+                <button
+                  type="button"
+                  className={`music-icon-button ${
+                    repeatMode !== 'off'
+                      ? 'is-active'
+                      : ''
+                  }`}
+                  onClick={cycleRepeatMode}
+                  aria-label={`Lặp: ${repeatMode}`}
+                >
+                  <Icon
+                    name={
+                      repeatMode === 'one'
+                        ? 'repeat-one'
+                        : 'repeat'
+                    }
+                  />
                 </button>
               </div>
 
-              <div className="music-song-list">
+              <div className="music-volume-row">
+                <Icon name="volume" />
+
+                <input
+                  className="music-volume-range"
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  value={volume}
+                  onChange={(event) =>
+                    setVolume(
+                      Number(event.target.value)
+                    )
+                  }
+                  aria-label="Âm lượng"
+                  style={{
+                    background: `linear-gradient(
+                      90deg,
+                      #e77491 0%,
+                      #e77491 ${volume * 100}%,
+                      #ecdfe2 ${volume * 100}%,
+                      #ecdfe2 100%
+                    )`,
+                  }}
+                />
+              </div>
+
+              <div className="music-queue-header">
+                <span>PLAYLIST</span>
+                <small>
+                  {songs.length} bài
+                </small>
+              </div>
+
+              <div className="music-song-list spotify-list">
                 {songs.map((song, index) => {
                   const selected =
                     index === currentIndex;
@@ -483,7 +765,7 @@ const MusicControl = forwardRef<MusicControlHandle, Props>(
                     <button
                       key={song.id}
                       type="button"
-                      className={`music-song ${
+                      className={`music-song spotify-song ${
                         selected
                           ? 'is-selected'
                           : ''
@@ -492,20 +774,44 @@ const MusicControl = forwardRef<MusicControlHandle, Props>(
                         playSong(index, true)
                       }
                     >
-                      <span
-                        className="music-song-heart"
-                        aria-hidden="true"
-                      >
-                        {selected
-                          ? '♥'
-                          : '♡'}
+                      <span className="music-song-index">
+                        {selected && playing ? (
+                          <span
+                            className="music-equalizer"
+                            aria-hidden="true"
+                          >
+                            <i />
+                            <i />
+                            <i />
+                          </span>
+                        ) : (
+                          String(index + 1).padStart(
+                            2,
+                            '0'
+                          )
+                        )}
                       </span>
 
                       <span className="music-song-copy">
                         <strong>
                           {song.title}
                         </strong>
+
+                        <small>
+                          {selected
+                            ? playing
+                              ? 'Đang phát'
+                              : 'Đã chọn'
+                            : 'Chạm để phát'}
+                        </small>
                       </span>
+
+                      {selected && (
+                        <span
+                          className="music-song-active-dot"
+                          aria-hidden="true"
+                        />
+                      )}
                     </button>
                   );
                 })}

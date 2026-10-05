@@ -21,23 +21,34 @@ function MusicNoteIcon() {
   return (
     <svg
       viewBox="0 0 24 24"
-      width="18"
-      height="18"
+      width="20"
+      height="20"
       aria-hidden="true"
       focusable="false"
     >
       <path
-        d="M9 18V6.7L19 4v11.2"
+        d="M10 17.5V6.8L18 5v9.7"
         fill="none"
         stroke="currentColor"
-        strokeWidth="1.9"
+        strokeWidth="1.8"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <circle cx="6.7" cy="18.1" r="2.7" fill="currentColor" />
-      <circle cx="16.7" cy="15.2" r="2.7" fill="currentColor" />
+      <circle cx="7.5" cy="17.5" r="2.5" fill="currentColor" />
+      <circle cx="15.5" cy="14.7" r="2.5" fill="currentColor" />
     </svg>
   );
+}
+
+function formatTime(value: number) {
+  if (!Number.isFinite(value) || value < 0) {
+    return '0:00';
+  }
+
+  const minutes = Math.floor(value / 60);
+  const seconds = Math.floor(value % 60);
+
+  return `${minutes}:${String(seconds).padStart(2, '0')}`;
 }
 
 export type MusicControlHandle = {
@@ -92,6 +103,8 @@ const MusicControl = forwardRef<MusicControlHandle, Props>(
     const [open, setOpen] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [playing, setPlaying] = useState(false);
+    const [currentTime, setCurrentTime] = useState(0);
+    const [duration, setDuration] = useState(0);
 
     const currentSong = songs[currentIndex];
 
@@ -122,6 +135,7 @@ const MusicControl = forwardRef<MusicControlHandle, Props>(
 
       if (restart) {
         audio.currentTime = 0;
+        setCurrentTime(0);
       }
 
       try {
@@ -155,6 +169,8 @@ const MusicControl = forwardRef<MusicControlHandle, Props>(
       }
 
       setCurrentIndex(0);
+      setCurrentTime(0);
+      setDuration(0);
       setPlaying(false);
       setOpen(false);
     };
@@ -260,6 +276,22 @@ const MusicControl = forwardRef<MusicControlHandle, Props>(
 
       pause();
     };
+    const seekTo = (value: number) => {
+      const audio = audioRef.current;
+
+      if (!audio || !Number.isFinite(audio.duration)) {
+        return;
+      }
+
+      const nextTime = Math.min(
+        Math.max(value, 0),
+        audio.duration
+      );
+
+      audio.currentTime = nextTime;
+      setCurrentTime(nextTime);
+    };
+
 
     return (
       <div
@@ -276,6 +308,31 @@ const MusicControl = forwardRef<MusicControlHandle, Props>(
           preload="metadata"
           onPlay={() => setPlaying(true)}
           onPause={() => setPlaying(false)}
+          onTimeUpdate={(event) => {
+            setCurrentTime(
+              event.currentTarget.currentTime
+            );
+          }}
+          onLoadedMetadata={(event) => {
+            const nextDuration =
+              event.currentTarget.duration;
+
+            setDuration(
+              Number.isFinite(nextDuration)
+                ? nextDuration
+                : 0
+            );
+          }}
+          onDurationChange={(event) => {
+            const nextDuration =
+              event.currentTarget.duration;
+
+            setDuration(
+              Number.isFinite(nextDuration)
+                ? nextDuration
+                : 0
+            );
+          }}
           onEnded={playNext}
         />
 
@@ -353,6 +410,39 @@ const MusicControl = forwardRef<MusicControlHandle, Props>(
                 </div>
               </div>
 
+              <div className="music-progress">
+                <input
+                  className="music-progress-range"
+                  type="range"
+                  min="0"
+                  max={duration || 0}
+                  step="0.1"
+                  value={
+                    Math.min(
+                      currentTime,
+                      duration || 0
+                    )
+                  }
+                  onChange={(event) =>
+                    seekTo(
+                      Number(event.target.value)
+                    )
+                  }
+                  disabled={!duration}
+                  aria-label="Tua nhạc"
+                />
+
+                <div className="music-progress-time">
+                  <span>
+                    {formatTime(currentTime)}
+                  </span>
+
+                  <span>
+                    {formatTime(duration)}
+                  </span>
+                </div>
+              </div>
+
               <div className="music-actions">
                 <button
                   type="button"
@@ -420,10 +510,6 @@ const MusicControl = forwardRef<MusicControlHandle, Props>(
                   );
                 })}
               </div>
-
-              <p className="music-note">
-                Đóng bảng này thì nhạc vẫn tiếp tục phát ♡
-              </p>
             </aside>
           </>
         )}

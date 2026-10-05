@@ -1304,3 +1304,45 @@ p { font-family: var(--font-sans); color: var(--text-soft); line-height: 1.8; le
   position:absolute; inset:10px; width:calc(100% - 20px); height:calc(100% - 20px);
   max-width:none; max-height:none; object-fit:contain; margin:0;
 }
+
+
+/* Icon nhạc dùng SVG để tránh emoji/font fallback bị hiện ô trắng. */
+.music-control-icon,
+.music-disc {
+  display:grid;
+  place-items:center;
+}
+
+.music-control-icon svg,
+.music-disc svg {
+  display:block;
+}
+
+.music-control-icon {
+  color:var(--pink-deep);
+}
+
+.music-disc {
+  color:#fff;
+}
+
+.music-disc.is-playing {
+  animation:musicDiscPulse 2.8s ease-in-out infinite;
+}
+
+@keyframes musicDiscPulse {
+  0%,
+  100% {
+    transform:scale(1);
+  }
+
+  50% {
+    transform:scale(1.045);
+  }
+}
+
+/* Không còn dòng tên ca sĩ nên khoảng cách text được gọn lại. */
+.music-now-playing > div,
+.music-song-copy {
+  gap:0;
+}

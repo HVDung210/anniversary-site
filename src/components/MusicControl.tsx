@@ -13,9 +13,32 @@ type Props = {
 type Song = {
   id: string;
   title: string;
-  artist: string;
   src: string;
 };
+
+
+function MusicNoteIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      width="18"
+      height="18"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path
+        d="M9 18V6.7L19 4v11.2"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.9"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <circle cx="6.7" cy="18.1" r="2.7" fill="currentColor" />
+      <circle cx="16.7" cy="15.2" r="2.7" fill="currentColor" />
+    </svg>
+  );
+}
 
 export type MusicControlHandle = {
   /**
@@ -46,20 +69,17 @@ export type MusicControlHandle = {
 const songs: Song[] = [
   {
     id: 'song-01',
-    title: '50 năm về sau',
-    artist: 'Tên ca sĩ',
+    title: 'Our song ♡',
     src: '/music/song-01.mp3',
   },
   {
     id: 'song-02',
-    title: 'Thế giới của anh',
-    artist: 'Tên ca sĩ',
+    title: 'Kỷ niệm thứ hai',
     src: '/music/song-02.mp3',
   },
   {
     id: 'song-03',
-    title: 'Kho báu',
-    artist: 'Tên ca sĩ',
+    title: 'Kỷ niệm thứ ba',
     src: '/music/song-03.mp3',
   },
 ];
@@ -276,7 +296,7 @@ const MusicControl = forwardRef<MusicControlHandle, Props>(
                 className="music-control-icon"
                 aria-hidden="true"
               >
-                {playing ? '♫' : '♪'}
+                <MusicNoteIcon />
               </span>
 
               <span className="music-control-label">
@@ -318,20 +338,18 @@ const MusicControl = forwardRef<MusicControlHandle, Props>(
 
               <div className="music-now-playing">
                 <span
-                  className="music-disc"
+                  className={`music-disc ${
+                    playing ? 'is-playing' : ''
+                  }`}
                   aria-hidden="true"
                 >
-                  {playing ? '♫' : '♪'}
+                  <MusicNoteIcon />
                 </span>
 
                 <div>
                   <strong>
                     {currentSong?.title}
                   </strong>
-
-                  <small>
-                    {currentSong?.artist}
-                  </small>
                 </div>
               </div>
 
@@ -397,15 +415,15 @@ const MusicControl = forwardRef<MusicControlHandle, Props>(
                         <strong>
                           {song.title}
                         </strong>
-
-                        <small>
-                          {song.artist}
-                        </small>
                       </span>
                     </button>
                   );
                 })}
               </div>
+
+              <p className="music-note">
+                Đóng bảng này thì nhạc vẫn tiếp tục phát ♡
+              </p>
             </aside>
           </>
         )}

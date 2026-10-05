@@ -9,13 +9,17 @@ import MemoryWall from './components/MemoryWall';
 import LoveLetter from './components/LoveLetter';
 import Finale from './components/Finale';
 import PhotoViewer from './components/PhotoViewer';
-import MusicControl, { type MusicControlHandle } from './components/MusicControl';
+import MusicControl, {
+  type MusicControlHandle,
+} from './components/MusicControl';
 import AmbientEffects from './components/AmbientEffects';
 import { photos } from './data/photos';
 
 export default function App() {
   const [started, setStarted] = useState(false);
-  const [activePhoto, setActivePhoto] = useState<number | null>(null);
+  const [activePhoto, setActivePhoto] =
+    useState<number | null>(null);
+
   const musicRef = useRef<MusicControlHandle>(null);
   const { scrollYProgress } = useScroll();
 
@@ -23,13 +27,14 @@ export default function App() {
 
   /**
    * Reveal nhẹ từng section khi đi vào viewport.
-   * Chỉ animate opacity + transform nên khá nhẹ.
    */
   useEffect(() => {
     if (!started) return;
 
     const sections = Array.from(
-      document.querySelectorAll<HTMLElement>('.site .section')
+      document.querySelectorAll<HTMLElement>(
+        '.site .section'
+      )
     );
 
     const observer = new IntersectionObserver(
@@ -37,7 +42,10 @@ export default function App() {
         for (const entry of entries) {
           if (!entry.isIntersecting) continue;
 
-          entry.target.classList.add('is-section-visible');
+          entry.target.classList.add(
+            'is-section-visible'
+          );
+
           observer.unobserve(entry.target);
         }
       },
@@ -48,7 +56,10 @@ export default function App() {
     );
 
     sections.forEach((section) => {
-      section.classList.remove('is-section-visible');
+      section.classList.remove(
+        'is-section-visible'
+      );
+
       observer.observe(section);
     });
 
@@ -56,97 +67,122 @@ export default function App() {
   }, [started]);
 
   /**
-   * Vì đây được gọi trực tiếp từ click "Chạm để bắt đầu",
-   * trình duyệt cho phép phát audio có tiếng.
-   * Bài đầu tiên luôn bắt đầu từ giây 0.
+   * Màn hình bắt đầu là một màn độc lập.
+   * Sau khi click mới mount nội dung website.
    */
   const start = async () => {
-    setStarted(true);
-
     await musicRef.current?.playFromStart();
 
-    window.setTimeout(
-      () =>
-        document
-          .getElementById('hero')
-          ?.scrollIntoView({ behavior: 'smooth' }),
-      450
-    );
+    setStarted(true);
+
+    requestAnimationFrame(() => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'auto',
+      });
+    });
   };
 
   const openRandom = () => {
     if (visiblePhotos.length === 0) return;
 
     const random =
-      visiblePhotos[Math.floor(Math.random() * visiblePhotos.length)];
+      visiblePhotos[
+        Math.floor(
+          Math.random() * visiblePhotos.length
+        )
+      ];
 
     setActivePhoto(random.id);
   };
 
+  /**
+   * "Xem lại từ đầu" chỉ quay về Hero.
+   * Không quay lại màn "Chạm để bắt đầu"
+   * và không dừng nhạc.
+   */
   const replay = () => {
-    musicRef.current?.stop();
+    setActivePhoto(null);
 
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-
-    window.setTimeout(() => {
-      setActivePhoto(null);
-      setStarted(false);
-    }, 500);
+    document
+      .getElementById('hero')
+      ?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
   };
 
   return (
     <>
-      {/* Hiệu ứng rơi nhẹ chạy xuyên suốt toàn website. */}
       <AmbientEffects />
 
-      <AnimatePresence>
-        {!started && <StartScreen onStart={start} />}
+      {/*
+        MusicControl luôn mount để nút Start
+        có thể gọi playFromStart trực tiếp.
+        Khi chưa started thì player không hiện.
+      */}
+      <MusicControl
+        ref={musicRef}
+        enabled={started}
+      />
+
+      <AnimatePresence mode="wait">
+        {!started && (
+          <StartScreen
+            key="start-screen"
+            onStart={start}
+          />
+        )}
       </AnimatePresence>
 
-      <main
-        className={
-          started
-            ? 'site visible has-section-reveal'
-            : 'site has-section-reveal'
-        }
-      >
-        <motion.div
-          className="top-progress"
-          style={{ scaleX: scrollYProgress }}
-        />
+      <AnimatePresence>
+        {started && (
+          <motion.main
+            key="anniversary-site"
+            className="site visible has-section-reveal"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{
+              duration: 0.5,
+              ease: 'easeOut',
+            }}
+          >
+            <motion.div
+              className="top-progress"
+              style={{
+                scaleX: scrollYProgress,
+              }}
+            />
 
-        <MusicControl
-          ref={musicRef}
-          enabled={started}
-        />
+            <Hero photos={visiblePhotos} />
 
-        <Hero photos={visiblePhotos} />
+            <Scrapbook
+              photos={visiblePhotos}
+              onOpen={setActivePhoto}
+            />
 
-        <Scrapbook
-          photos={visiblePhotos}
-          onOpen={setActivePhoto}
-        />
+            <MemoryUniverse
+              photos={visiblePhotos}
+              onOpen={setActivePhoto}
+            />
 
-        <MemoryUniverse
-          photos={visiblePhotos}
-          onOpen={setActivePhoto}
-        />
+            <PhotoHeart
+              photos={visiblePhotos}
+              onOpen={setActivePhoto}
+            />
 
-        <PhotoHeart
-          photos={visiblePhotos}
-          onOpen={setActivePhoto}
-        />
+            <MemoryWall
+              photos={visiblePhotos}
+              onOpen={setActivePhoto}
+              onRandom={openRandom}
+            />
 
-        <MemoryWall
-          photos={visiblePhotos}
-          onOpen={setActivePhoto}
-          onRandom={openRandom}
-        />
+            <LoveLetter />
 
-        <LoveLetter />
-
-        <Finale onReplay={replay} />
-      </main>
+            <Finale onReplay={replay} />
+          </motion.main>
+        )}
+      </AnimatePresence>
 
       <PhotoViewer
         photos={visiblePhotos}

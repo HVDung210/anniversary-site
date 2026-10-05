@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion';
 import FloatingMascots from './FloatingMascots';
 
 type StartScreenProps = {
@@ -8,19 +9,45 @@ export default function StartScreen({
   onStart,
 }: StartScreenProps) {
   return (
-    <section className="start-screen">
+    <motion.section
+      className="start-screen"
+      initial={{ opacity: 1 }}
+      animate={{ opacity: 1 }}
+      exit={{
+        opacity: 0,
+        scale: 1.025,
+      }}
+      transition={{
+        duration: 0.42,
+        ease: 'easeInOut',
+      }}
+    >
       <div className="start-heart" />
 
       <FloatingMascots variant="start" />
 
-      <div className="start-card glass-card">
+      <motion.div
+        className="start-card glass-card"
+        initial={{
+          opacity: 0,
+          y: 14,
+          scale: 0.985,
+        }}
+        animate={{
+          opacity: 1,
+          y: 0,
+          scale: 1,
+        }}
+        transition={{
+          duration: 0.65,
+          ease: 'easeOut',
+        }}
+      >
         <div className="eyebrow">
           A LITTLE PLACE FOR US
         </div>
 
-        <h1>
-          <span></span> congchuacuaanh
-        </h1>
+        <h1>congchuacuaanh</h1>
 
         <div className="anniversary-date">
           10.10.2025
@@ -42,7 +69,7 @@ export default function StartScreen({
         <div className="micro-copy">
           A little place for us
         </div>
-      </div>
-    </section>
+      </motion.div>
+    </motion.section>
   );
 }

@@ -224,7 +224,7 @@
   }
 }
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; background: var(--bg-primary); scrollbar-gutter: stable; }
+html { scroll-behavior: smooth; background: var(--bg-primary); }
 body { margin: 0; min-width: 320px; background: var(--bg-primary); color: var(--text-primary); overflow-x: hidden; font-family: var(--font-sans); font-synthesis: none; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 button, input, textarea, select { font: inherit; }
 button { color: inherit; }
@@ -1115,28 +1115,8 @@ p { font-family: var(--font-sans); color: var(--text-soft); line-height: 1.8; le
 .forever-mark { font-size:35px; line-height:1.6; margin:46px 0 34px; font-family:var(--font-serif); }
 .forever-mark span { font-size:15px; letter-spacing:.12em; color:var(--text-soft); }
 
-.viewer { position:fixed; inset:0; z-index:2000; background:rgba(54,39,44,.88); display:flex; align-items:center; justify-content:center; padding:24px; }
-.viewer-frame {
-  margin:0;
-  max-width:min(900px,80vw);
-  max-height:84vh;
-  background:#fff;
-  padding:12px;
-  box-shadow:0 30px 90px rgba(0,0,0,.25);
-  transform:translateZ(0);
-}
-.viewer-frame img {
-  display:block;
-  max-height:76vh;
-  max-width:78vw;
-  object-fit:contain;
-  margin:auto;
-  backface-visibility:hidden;
-}
-.viewer-close,.viewer-nav { position:fixed; border:0; background:rgba(255,255,255,.88); color:#76505b; cursor:pointer; box-shadow:var(--soft-shadow); }
-.viewer-close { right:24px; top:22px; width:44px;height:44px;border-radius:50%;font-size:28px; }
-.viewer-nav { top:50%; transform:translateY(-50%); width:48px;height:68px;border-radius:20px;font-size:38px; }
-.viewer-prev { left:22px; } .viewer-next{right:22px}
+
+ 
 
 @media (max-width: 900px) {
   .section { padding:88px 18px; }
@@ -1221,11 +1201,11 @@ p { font-family: var(--font-sans); color: var(--text-soft); line-height: 1.8; le
   .letter-inner { min-height:800px; }
   .letter-paper { margin-top:-145px; padding:54px 26px; min-height:620px; }
   .letter-paper h3 { font-size:35px; }
-  .viewer { padding:14px; }
-  .viewer-frame { max-width:92vw; }
-  .viewer-frame img { max-width:88vw; max-height:72vh; }
-  .viewer-nav { width:40px;height:54px;font-size:31px;background:rgba(255,255,255,.76); }
-  .viewer-prev{left:8px}.viewer-next{right:8px}.viewer-close{right:10px;top:10px}
+  
+  
+  
+  
+  
 }
 
 
@@ -1263,11 +1243,7 @@ p { font-family: var(--font-sans); color: var(--text-soft); line-height: 1.8; le
 }
 
 /* Ảnh thumb làm nền tới khi ảnh display được decode xong. */
-.viewer-frame { position:relative; display:grid; place-items:center; overflow:hidden; }
-.viewer-frame .viewer-thumb,
-.viewer-frame .viewer-display { grid-area:1 / 1; display:block; max-width:78vw; max-height:76vh; width:auto; height:auto; object-fit:contain; }
-.viewer-frame .viewer-display { opacity:0; }
-.viewer-frame .viewer-display.is-ready { opacity:1; }
+
 
 /* Scrapbook: không dùng spring từng ảnh; chỉ 2 ảnh có nhịp nổi rất nhỏ. */
 .scrap-photo { transition:transform .20s ease-out; backface-visibility:hidden; }
@@ -1298,12 +1274,6 @@ p { font-family: var(--font-sans); color: var(--text-soft); line-height: 1.8; le
 }
 
 /* Khung viewer cố định theo tỷ lệ ảnh để ảnh lớn không làm layout nhảy khi tải xong. */
-.viewer-frame { display:block; position:relative; padding:10px; flex:none; max-width:92vw; max-height:80vh; }
-.viewer-frame .viewer-thumb,
-.viewer-frame .viewer-display {
-  position:absolute; inset:10px; width:calc(100% - 20px); height:calc(100% - 20px);
-  max-width:none; max-height:none; object-fit:contain; margin:0;
-}
 
 
 /* Icon nhạc dùng SVG để tránh emoji/font fallback bị hiện ô trắng. */
@@ -2446,6 +2416,80 @@ body:has(.start-screen) {
 }
 
 
+/*
+ * Nếu CSS cũ còn .viewer-thumb thì ẩn hẳn.
+ * Bản PhotoViewer mới không còn render thumbnail nữa.
+ */
+
+
+
+/* Loader nhỏ thay vì hiện thumbnail crop hoặc khung trắng. */
+
+
+/*
+ * Loader luôn nằm giữa viewport,
+ * không phụ thuộc kích thước ảnh.
+ */
+
+
+/*
+ * Nếu CSS cũ còn thumbnail viewer thì ẩn hoàn toàn.
+ */
+
+
+
+@media (max-width:640px) {
+  
+
+  
+}
+
+@media (prefers-reduced-motion:reduce) {
+  
+
+  
+}
+
+
+/* =========================================================
+   BIGGER FALLING PARTICLES
+   ========================================================= */
+
+/*
+ * Component đã tăng size lên 15-27px.
+ * CSS này giữ nét và shadow nhẹ hơn khi hạt lớn.
+ */
+.ambient-particle {
+  text-shadow:
+    0 5px 14px
+    rgba(231, 126, 149, .14);
+}
+
+@media (max-width: 640px) {
+  /*
+   * Giữ hạt đủ lớn trên mobile nhưng tránh chiếm quá nhiều màn hình.
+   */
+  .ambient-particle {
+    font-size:
+      min(
+        var(--particle-size),
+        24px
+      );
+  }
+
+  
+
+  
+}
+
+@media (prefers-reduced-motion: reduce) {
+  
+
+  
+}
+
+
+
 /* =========================================================
    REPLAY TARGET
    ========================================================= */
@@ -2502,4 +2546,151 @@ body:has(.start-screen) {
   .hero-photo figcaption {
     transition:none !important;
   }
+}
+
+/* =========================================================
+   PHOTO VIEWER - MỘT BỘ QUY TẮC DUY NHẤT
+   ========================================================= */
+.viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(54, 39, 44, .88);
+}
+
+/* Không ẩn toàn bộ frame: tránh tình trạng viewer mở nhưng ảnh không hiện. */
+.viewer-frame {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 1 auto;
+  margin: 0;
+  padding: 0;
+  max-width: min(900px, 82vw);
+  max-height: 82dvh;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 14px;
+  background: transparent;
+  box-shadow: none;
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+}
+
+.viewer-frame.is-ready {
+  box-shadow: 0 28px 80px rgba(0, 0, 0, .28);
+}
+
+.viewer-frame img,
+.viewer-frame .viewer-display {
+  display: block;
+  position: static;
+  width: auto;
+  height: auto;
+  max-width: min(900px, 82vw);
+  max-height: 82dvh;
+  margin: 0;
+  object-fit: contain;
+  background: transparent;
+  backface-visibility: hidden;
+}
+
+/* Ảnh chỉ fade-in khi component gắn class is-ready sau onLoad. */
+.viewer-frame .viewer-display {
+  opacity: 0;
+  transition: opacity .16s ease;
+}
+.viewer-frame.is-ready .viewer-display {
+  opacity: 1;
+}
+
+/* Không sử dụng lại thumbnail vuông/crop trong viewer. */
+.viewer-thumb,
+.viewer-frame .viewer-thumb {
+  display: none !important;
+}
+
+.viewer-loading {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  border: 1px solid rgba(255, 255, 255, .28);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .10);
+  color: rgba(255, 255, 255, .94);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.viewer-loading-heart {
+  font-size: 28px;
+  line-height: 1;
+  animation: viewerHeartPulse .95s ease-in-out infinite;
+}
+@keyframes viewerHeartPulse {
+  0%, 100% { opacity: .45; transform: scale(.86); }
+  50% { opacity: 1; transform: scale(1.14); }
+}
+
+.viewer-close,
+.viewer-nav {
+  position: fixed;
+  z-index: 5;
+  border: 0;
+  background: rgba(255, 255, 255, .90);
+  color: #76505b;
+  cursor: pointer;
+  box-shadow: var(--soft-shadow);
+}
+.viewer-close {
+  top: 22px;
+  right: 24px;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  font-size: 27px;
+}
+.viewer-nav {
+  top: 50%;
+  width: 48px;
+  height: 68px;
+  border-radius: 20px;
+  font-size: 36px;
+  transform: translateY(-50%);
+}
+.viewer-prev { left: 22px; }
+.viewer-next { right: 22px; }
+
+@media (max-width: 640px) {
+  .viewer { padding: 12px; }
+  .viewer-frame,
+  .viewer-frame img,
+  .viewer-frame .viewer-display {
+    max-width: 92vw;
+    max-height: 80dvh;
+  }
+  .viewer-nav {
+    width: 40px;
+    height: 54px;
+    border-radius: 16px;
+    font-size: 30px;
+  }
+  .viewer-prev { left: 8px; }
+  .viewer-next { right: 8px; }
+  .viewer-close { top: 10px; right: 10px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .viewer-frame .viewer-display { transition: none; }
+  .viewer-loading-heart { animation: none; }
 }

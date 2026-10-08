@@ -42,11 +42,7 @@ export default function Hero({ photos }: Props) {
           <h2>One year with you.</h2>
 
           <p>
-            Có rất nhiều thứ anh không nhớ được
-            ngày tháng…
-            <br />
-            nhưng may là chúng ta đã giữ lại bằng
-            ảnh.
+            Những khoảnh khắc tuyệt vời nhất của chúng ta, những kỷ niệm ngọt ngào nhất, và những điều anh muốn nói với em.
           </p>
 
           <div className="signature-chip">

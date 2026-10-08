@@ -32,17 +32,17 @@ export type MusicControlHandle = {
 const songs: Song[] = [
   {
     id: 'song-01',
-    title: 'Our song ♡',
+    title: '50 năm về sau',
     src: '/music/song-01.mp3',
   },
   {
     id: 'song-02',
-    title: 'Kỷ niệm thứ hai',
+    title: 'Thế giới của anh',
     src: '/music/song-02.mp3',
   },
   {
     id: 'song-03',
-    title: 'Kỷ niệm thứ ba',
+    title: 'Kho báu',
     src: '/music/song-03.mp3',
   },
 ];
@@ -570,7 +570,7 @@ const MusicControl = forwardRef<MusicControlHandle, Props>(
                   </span>
 
                   <h3>
-                    Nhạc của chúng mình
+                    Danh sách nhạc
                   </h3>
                 </div>
 

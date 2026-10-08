@@ -1212,46 +1212,38 @@ export const photos: Photo[] = [
     "id": 151,
     "thumb": "/images/thumbs/0151.webp",
     "src": "/images/display/0151.webp",
-    "width": 2734,
-    "height": 4096,
+    "width": 3024,
+    "height": 3404,
     "orientation": "portrait"
   },
   {
     "id": 152,
     "thumb": "/images/thumbs/0152.webp",
     "src": "/images/display/0152.webp",
-    "width": 3024,
-    "height": 3404,
+    "width": 3839,
+    "height": 4313,
     "orientation": "portrait"
   },
   {
     "id": 153,
     "thumb": "/images/thumbs/0153.webp",
     "src": "/images/display/0153.webp",
-    "width": 3839,
-    "height": 4313,
-    "orientation": "portrait"
-  },
-  {
-    "id": 154,
-    "thumb": "/images/thumbs/0154.webp",
-    "src": "/images/display/0154.webp",
     "width": 3021,
     "height": 2169,
     "orientation": "landscape"
   },
   {
-    "id": 155,
-    "thumb": "/images/thumbs/0155.webp",
-    "src": "/images/display/0155.webp",
+    "id": 154,
+    "thumb": "/images/thumbs/0154.webp",
+    "src": "/images/display/0154.webp",
     "width": 4096,
     "height": 4096,
     "orientation": "square"
   },
   {
-    "id": 156,
-    "thumb": "/images/thumbs/0156.webp",
-    "src": "/images/display/0156.webp",
+    "id": 155,
+    "thumb": "/images/thumbs/0155.webp",
+    "src": "/images/display/0155.webp",
     "width": 4096,
     "height": 4096,
     "orientation": "square"

@@ -1,3 +1,4 @@
+import { prefetchPhoto } from '../utils/imagePreload';
 import { useEffect, useMemo, useState } from 'react';
 import type { Photo } from '../data/photos';
 
@@ -51,7 +52,7 @@ export default function MemoryWall({ photos, onOpen, onRandom }: Props) {
           {columns.map((column, columnIndex) => (
             <div className="masonry-column" key={columnIndex}>
               {column.map((photo) => (
-                <button className="wall-card" type="button" key={photo.id} onClick={() => onOpen(photo.id)} aria-label="Mở một kỷ niệm">
+                <button className="wall-card" type="button" key={photo.id} onPointerEnter={() => prefetchPhoto(photo.src)} onFocus={() => prefetchPhoto(photo.src)} onTouchStart={() => prefetchPhoto(photo.src)} onClick={() => onOpen(photo.id)} aria-label="Mở một kỷ niệm">
                   <img src={photo.thumb} alt="Kỷ niệm của chúng mình" loading="lazy" decoding="async" width={240} height={240} />
                 </button>
               ))}

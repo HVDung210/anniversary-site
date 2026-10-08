@@ -1,3 +1,4 @@
+import { prefetchPhoto } from '../utils/imagePreload';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
 import type { Photo } from '../data/photos';
@@ -140,6 +141,9 @@ export default function PhotoHeart({ photos, onOpen }: Props) {
                 className="heart-tile"
                 key={photo.id}
                 style={style}
+                onPointerEnter={() => prefetchPhoto(photo.src)}
+                onFocus={() => prefetchPhoto(photo.src)}
+                onTouchStart={() => prefetchPhoto(photo.src)}
                 onClick={() => onOpen(photo.id)}
                 aria-label={`Mở kỷ niệm ${photo.id}`}
               >

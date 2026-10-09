@@ -6,6 +6,9 @@ const inputDir = path.resolve('public/images/originals');
 const thumbDir = path.resolve('public/images/thumbs');
 const displayDir = path.resolve('public/images/display');
 const outputFile = path.resolve('src/data/photos.ts');
+const thumbnailsOnly = process.argv.includes('--thumbs-only');
+const THUMB_SIZE = 640;
+const THUMB_QUALITY = 82;
 
 const supportedExtensions = new Set([
   '.jpg',
@@ -23,21 +26,15 @@ if (!fs.existsSync(inputDir)) {
 }
 
 /**
- * Dọn ảnh đã generate cũ để tránh còn file thừa khi bộ ảnh mới ít hơn bộ cũ.
- * Chỉ dọn file .webp trong thư mục output, không đụng tới originals.
+ * Chỉ dọn file WebP thừa sau khi tạo thành công toàn bộ bộ ảnh mới.
  */
-function clearGeneratedWebp(directory) {
-  fs.mkdirSync(directory, { recursive: true });
-
+function clearStaleGeneratedWebp(directory, expectedNames) {
   for (const file of fs.readdirSync(directory)) {
-    if (path.extname(file).toLowerCase() === '.webp') {
+    if (path.extname(file).toLowerCase() === '.webp' && !expectedNames.has(file)) {
       fs.unlinkSync(path.join(directory, file));
     }
   }
 }
-
-clearGeneratedWebp(thumbDir);
-clearGeneratedWebp(displayDir);
 
 const files = fs
   .readdirSync(inputDir)
@@ -54,6 +51,9 @@ const files = fs
 if (files.length === 0) {
   throw new Error(`Không có ảnh hợp lệ trong ${inputDir}`);
 }
+
+fs.mkdirSync(thumbDir, { recursive: true });
+if (!thumbnailsOnly) fs.mkdirSync(displayDir, { recursive: true });
 
 const photos = [];
 
@@ -92,23 +92,28 @@ for (let index = 0; index < files.length; index += 1) {
 
   /**
    * Thumbnail dùng cho Heart / Universe / Scrapbook / Memory Wall.
-   * 220px đủ cho tile nhỏ nhưng giảm đáng kể decode memory và network.
+   * 640px giữ nét trên màn hình điện thoại có DPR 2-3.
    */
   await sharp(fullPath)
     .rotate()
     .resize({
-      width: 220,
-      height: 220,
+      width: THUMB_SIZE,
+      height: THUMB_SIZE,
       fit: 'cover',
       position: 'centre',
       withoutEnlargement: true,
     })
     .webp({
-      quality: 64,
+      quality: THUMB_QUALITY,
       effort: 4,
       smartSubsample: true,
     })
     .toFile(path.join(thumbDir, thumbName));
+
+  if (thumbnailsOnly) {
+    console.log(`[${index + 1}/${files.length}] Thumbnail: ${file}`);
+    continue;
+  }
 
   /**
    * Display chỉ tải khi mở viewer hoặc dùng ở hero.
@@ -153,10 +158,17 @@ const output = `export type Photo = {
 export const photos: Photo[] = ${JSON.stringify(photos, null, 2)};
 `;
 
-fs.writeFileSync(outputFile, output, 'utf8');
+const expectedNames = new Set(files.map((_, index) => `${String(index + 1).padStart(4, '0')}.webp`));
+clearStaleGeneratedWebp(thumbDir, expectedNames);
+if (!thumbnailsOnly) {
+  clearStaleGeneratedWebp(displayDir, expectedNames);
+  fs.writeFileSync(outputFile, output, 'utf8');
+}
 
 console.log('');
-console.log(`Generated ${photos.length} photos`);
+console.log(`Generated ${files.length} ${thumbnailsOnly ? 'thumbnails' : 'photos'}`);
 console.log(`Thumbs: ${thumbDir}`);
-console.log(`Display: ${displayDir}`);
-console.log(`Data: ${outputFile}`);
+if (!thumbnailsOnly) {
+  console.log(`Display: ${displayDir}`);
+  console.log(`Data: ${outputFile}`);
+}

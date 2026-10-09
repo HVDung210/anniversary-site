@@ -1,6 +1,7 @@
 import { useEffect, useState, type CSSProperties } from 'react';
 import type { Photo } from '../data/photos';
 import { preloadImage, prefetchPhoto } from '../utils/imagePreload';
+import Icon from './Icon';
 
 type Props = {
   photos: Photo[];
@@ -71,22 +72,22 @@ export default function PhotoViewer({ photos, activeId, onClose, onChange }: Pro
 
   return (
     <div className="viewer" role="dialog" aria-modal="true" aria-label="Xem ảnh kỷ niệm" onClick={onClose}>
-      <button type="button" className="viewer-close" onClick={(event) => { event.stopPropagation(); onClose(); }} aria-label="Đóng ảnh">×</button>
-      <button type="button" className="viewer-nav viewer-prev" onClick={(event) => { event.stopPropagation(); move(-1); }} aria-label="Ảnh trước">‹</button>
+      <button type="button" className="viewer-close" onClick={(event) => { event.stopPropagation(); onClose(); }} aria-label="Đóng ảnh"><Icon name="close" /></button>
+      <button type="button" className="viewer-nav viewer-prev" onClick={(event) => { event.stopPropagation(); move(-1); }} aria-label="Ảnh trước"><Icon name="left" /></button>
       {isLoaded ? (
         <figure key={active.src} className="full-only-viewer-stage" style={stageStyle} onClick={(event) => event.stopPropagation()}>
           <img src={active.src} alt="Kỷ niệm của chúng mình" decoding="async" draggable={false} />
         </figure>
       ) : (
         <div className="full-only-viewer-loading" role="status" onClick={(event) => event.stopPropagation()}>
-          <span className="full-only-viewer-loading-icon" aria-hidden="true">♡</span>
+          <span className="full-only-viewer-loading-icon" aria-hidden="true"><Icon name="heart" /></span>
           <span className="full-only-viewer-loading-text">{hasError ? 'Không tải được ảnh. Hãy thử lại.' : 'Đang tải kỷ niệm...'}</span>
           {hasError && (
             <button type="button" className="full-only-viewer-retry" onClick={() => { setErrorSrc(null); setLoadedSrc(null); prefetchPhoto(active.src); preloadImage(active.src).then(() => setLoadedSrc(active.src)).catch(() => setErrorSrc(active.src)); }}>Thử lại</button>
           )}
         </div>
       )}
-      <button type="button" className="viewer-nav viewer-next" onClick={(event) => { event.stopPropagation(); move(1); }} aria-label="Ảnh tiếp theo">›</button>
+      <button type="button" className="viewer-nav viewer-next" onClick={(event) => { event.stopPropagation(); move(1); }} aria-label="Ảnh tiếp theo"><Icon name="right" /></button>
     </div>
   );
 }

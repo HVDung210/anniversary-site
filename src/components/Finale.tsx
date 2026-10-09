@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import FloatingMascots from './FloatingMascots';
+import Icon from './Icon';
 
 type Props = { onReplay?: () => void };
 const petals = Array.from({ length: 12 }, (_, i) => ({
@@ -37,7 +38,7 @@ export default function Finale({ onReplay }: Props) {
         <h2>Một năm rồi đó.</h2>
         <p>Còn rất nhiều kỷ niệm đang chờ chúng ta. ♡</p>
         <div className="forever-mark">♡<br /><span>10.10.2025 → ∞</span></div>
-        {onReplay && <button className="secondary-button" type="button" onClick={onReplay}>↻ Xem lại từ đầu</button>}
+        {onReplay && <button className="secondary-button button-with-icon" type="button" onClick={onReplay}><Icon name="replay" />Xem lại từ đầu</button>}
       </div>
     </section>
   );

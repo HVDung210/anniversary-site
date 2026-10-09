@@ -5,8 +5,8 @@ import {
   useMemo,
   useRef,
   useState,
-  type SVGProps,
 } from 'react';
+import Icon from './Icon';
 
 type Props = {
   enabled: boolean;
@@ -56,127 +56,6 @@ function formatTime(value: number) {
   const seconds = Math.floor(value % 60);
 
   return `${minutes}:${String(seconds).padStart(2, '0')}`;
-}
-
-function Icon({
-  name,
-  ...props
-}: SVGProps<SVGSVGElement> & {
-  name:
-    | 'music'
-    | 'play'
-    | 'pause'
-    | 'previous'
-    | 'next'
-    | 'shuffle'
-    | 'repeat'
-    | 'repeat-one'
-    | 'volume'
-    | 'chevron'
-    | 'close';
-}) {
-  const common = {
-    viewBox: '0 0 24 24',
-    fill: 'none',
-    stroke: 'currentColor',
-    strokeWidth: 1.9,
-    strokeLinecap: 'round' as const,
-    strokeLinejoin: 'round' as const,
-    'aria-hidden': true,
-    focusable: false,
-    ...props,
-  };
-
-  if (name === 'play') {
-    return (
-      <svg {...common}>
-        <path d="M8.5 6.4v11.2L18 12 8.5 6.4Z" fill="currentColor" stroke="none" />
-      </svg>
-    );
-  }
-
-  if (name === 'pause') {
-    return (
-      <svg {...common}>
-        <path d="M9 7v10M15 7v10" strokeWidth="2.6" />
-      </svg>
-    );
-  }
-
-  if (name === 'previous') {
-    return (
-      <svg {...common}>
-        <path d="M7.5 6.5v11M17 7.5 9.5 12l7.5 4.5v-9Z" fill="currentColor" stroke="none" />
-      </svg>
-    );
-  }
-
-  if (name === 'next') {
-    return (
-      <svg {...common}>
-        <path d="M16.5 6.5v11M7 7.5l7.5 4.5L7 16.5v-9Z" fill="currentColor" stroke="none" />
-      </svg>
-    );
-  }
-
-  if (name === 'shuffle') {
-    return (
-      <svg {...common}>
-        <path d="M4 7h2.4c4.8 0 5.1 10 9.8 10H20" />
-        <path d="m17 14 3 3-3 3" />
-        <path d="M4 17h2.4c1.7 0 2.9-1.4 4-3" />
-        <path d="M13.7 8.2c.7-.7 1.5-1.2 2.5-1.2H20" />
-        <path d="m17 4 3 3-3 3" />
-      </svg>
-    );
-  }
-
-  if (name === 'repeat' || name === 'repeat-one') {
-    return (
-      <svg {...common}>
-        <path d="M17 2.8 20.2 6 17 9.2" />
-        <path d="M4 10V8a2 2 0 0 1 2-2h14" />
-        <path d="m7 21.2-3.2-3.2L7 14.8" />
-        <path d="M20 14v2a2 2 0 0 1-2 2H4" />
-        {name === 'repeat-one' && (
-          <path d="M12 9.6v4.8M10.8 10.8 12 9.6" />
-        )}
-      </svg>
-    );
-  }
-
-  if (name === 'volume') {
-    return (
-      <svg {...common}>
-        <path d="M5 10v4h3l4 3V7L8 10H5Z" />
-        <path d="M15 9.2a4 4 0 0 1 0 5.6M17.5 7a7 7 0 0 1 0 10" />
-      </svg>
-    );
-  }
-
-  if (name === 'chevron') {
-    return (
-      <svg {...common}>
-        <path d="m8 10 4 4 4-4" />
-      </svg>
-    );
-  }
-
-  if (name === 'close') {
-    return (
-      <svg {...common}>
-        <path d="m8 8 8 8M16 8l-8 8" />
-      </svg>
-    );
-  }
-
-  return (
-    <svg {...common}>
-      <path d="M9 18V6.8L19 4.5v10.8" />
-      <circle cx="6.7" cy="18.1" r="2.7" fill="currentColor" stroke="none" />
-      <circle cx="16.7" cy="15.2" r="2.7" fill="currentColor" stroke="none" />
-    </svg>
-  );
 }
 
 const MusicControl = forwardRef<MusicControlHandle, Props>(

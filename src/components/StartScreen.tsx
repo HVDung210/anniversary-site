@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import FloatingMascots from './FloatingMascots';
+import Icon from './Icon';
 
 type StartScreenProps = {
   onStart: () => void;
@@ -63,7 +64,7 @@ export default function StartScreen({
           onClick={onStart}
         >
           Chạm để bắt đầu ♡
-          <span>→</span>
+          <Icon name="arrow" />
         </button>
 
         <div className="micro-copy">

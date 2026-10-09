@@ -2,8 +2,14 @@ import type { Photo } from '../data/photos';
 type Props = { photos: Photo[]; onOpen: (id: number) => void };
 const notes = ['our favorite moments ♡', 'still choosing you ♡', 'every photo matters ♡'];
 
+// ID trong data/photos.ts: 11 tương ứng 0011.webp. Thứ tự danh sách là thứ tự hiển thị.
+// Bố cục scrapbook hiện có 9 vị trí, nên giữ 9 ID khác nhau.
+const SCRAPBOOK_PHOTO_IDS = [9, 16, 17, 18, 19, 22, 28, 37, 41];
+
 export default function Scrapbook({ photos, onOpen }: Props) {
-  const picks = photos.slice(10, 19);
+  const picks = SCRAPBOOK_PHOTO_IDS
+    .map((id) => photos.find((photo) => photo.id === id))
+    .filter((photo): photo is Photo => photo !== undefined);
   return (
     <section className="section scrapbook-section" id="scrapbook">
       <div className="section-inner">

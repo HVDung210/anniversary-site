@@ -9,9 +9,9 @@ const rotations = [-8, 7, -1];
 
 export default function Hero({ photos }: Props) {
   const heroPhotos = [
-    photos[4],
-    photos[7],
-    photos[1],
+    photos[27],
+    photos[18],
+    photos[19],
   ].filter(Boolean);
 
   return (

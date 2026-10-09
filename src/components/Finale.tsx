@@ -36,7 +36,7 @@ export default function Finale({ onReplay }: Props) {
       <div className="section-inner finale-inner">
         <div className="eyebrow">TO BE CONTINUED</div>
         <h2>Một năm rồi đó.</h2>
-        <p>Còn rất nhiều kỷ niệm đang chờ chúng ta. ♡</p>
+        <p>Còn rất nhiều kỷ niệm đang chờ chúng ta.</p>
         <div className="forever-mark">♡<br /><span>10.10.2025 → ∞</span></div>
         {onReplay && <button className="secondary-button button-with-icon" type="button" onClick={onReplay}><Icon name="replay" />Xem lại từ đầu</button>}
       </div>
